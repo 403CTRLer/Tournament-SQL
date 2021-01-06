@@ -3,19 +3,84 @@ from gen import *
 from random import shuffle
 from art import tprint
 
-tour_name = n_teams = n_members = roundno = p_tb_col = 0
+tour_name = n_teams = n_members = roundno = p_tb_col = winner = 0
 
-def show_dbs():
-    csr = get_connection().cursor()
-    csr.execute("SHOW DATABASES")
-    dbs = csr.fetchall()
-    return tuple([x[0] for x in dbs[3:]])
+
+def rounds(teams):
+    global roundno
+
+    roundno += 1
+    shuffle(teams)
+
+    create_round_tb(roundno, tour_name)
+
+    #seperate tournament match for 3 teams
+    if len(teams) == 3:
+        return _3teams(teams)
+
+    #Splitting teams in 2s
+    match_making = [tuple(teams[x : x + 2]) for x in range(0, len(teams), 2)]
+
+    #Checking for odd team
+    oddteam_id = (match_making.pop())[0] if len(match_making[-1]) == 1 else None
+
+    #insert teams data on round table
+    for team in match_making:
+        insert_round(team, roundno, tour_name)
+
+    for _id in range(1, len(match_making) + 1):
+        get_winner(_id, roundno, tour_name)
+
+    win_ids = get_win_ids(roundno, tour_name)
+    if oddteam_id:
+        return oddteam((oddteam_id, win_ids[0]), len(match_making) + 1, win_ids[1:])
+
+    if len(win_ids) > 0:
+        if len(win_ids) == 1:
+            return win_ids[0]
+
+        rounds(win_ids) #qualifying winners to next round
+
+def _3teams(teams):
+    global roundno
+    t1, t2, t3 = teams
+
+    insert_round((t1, t2), roundno, tour_name)
+    m1winner = get_winner(match_id, roundno, tour_name); match_id += 1
+    t4 = t2 if m1winner == t1 else t1
+
+    insert_round((t3, t4), roundno, tour_name)
+    m2winner = get_winner(match_id, roundno, tour_name); match_id += 1
+
+    if m2winner != t4:
+        insert_round((m1winner, m2_winner), roundno, tour_name)
+        return get_winner(match_id, roundno, tour_name)
+
+    elif m2_winner == t4:
+        insert_round((m1winner, t3), roundno, tour_name)
+        m3winner = get_winner(match_id, roundno, tour_name); match_id += 1
+
+        if m3winner == t3:
+            print("Round has resulted in draw! \nReplaying round!")
+            roundno += 1
+            create_round_tb(roundno, tour_name)
+            return _3teams(teams)
+
+        else:
+            insert_round((m1winner, m2_winner), roundno, tour_name)
+            return get_winner(match_id, roundno, tour_name)
+
+
+
+def oddteam(teams, match_id, win_ids):
+    insert_round(teams, roundno, tour_name)
+
+    win_ids.append(get_winner(match_id, roundno, tour_name))
+    rounds(win_ids)
 
 
 
 def teams():
-    global n_teams, n_members
-
     for i in range(1, n_teams + 1):
         name = input(f"\nEnter team ({i}) name: ")
         insert('teams', tour_name, 'team_name', f'"{name}"')
@@ -27,8 +92,6 @@ def teams():
 
 
 def members_data(team_name):
-    global tour_name, n_teams, n_members, p_tb_col
-
     members = tuple()
     for i in range(1, n_members + 1):
         members += (input(f'Enter member {i}\'s name: '),)
@@ -39,8 +102,6 @@ def members_data(team_name):
 
 
 def initialize_db():
-    global tour_name, n_members
-
     #creating db for the whole tournament
     create_db(tour_name)
 
@@ -72,9 +133,10 @@ def initialize_db():
 def user_inputs():
     global tour_name, n_teams, n_members, p_tb_col
 
-    tour_name = unique_input('Enter tournament\'s name: ', show_dbs())
-    n_teams = get_num_input("Enter total no of teams:")
-    n_members = get_num_input('Enter no of members on each team: ')
+    tprint('TOURNAMENT MANAGEMENT', font = 'small')
+    tour_name = unique_input("Enter tournament's name          : ", show_dbs(), "Tournament {} has already been created! \nTry a new name\n\n")
+    n_teams = get_num_input("Enter total no of teams          : ")
+    n_members = get_num_input("Enter no of members on each team : ")
     p_tb_col = get_member_col(n_members)
 
     seperator()
@@ -90,4 +152,9 @@ def flow():
 
     teams() #Func call to get team and members data
 
+    global winner
+    winner = rounds([x for x in range(1, n_teams + 1)])
+    winner = winner_data(winner, tour_name)
+
+    print(winner, 'has won the tournament')
 flow()

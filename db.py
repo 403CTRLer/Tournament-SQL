@@ -3,9 +3,10 @@ import mysql.connector as sql
 from mysql.connector import errorcode #For checking exceptions
 
 
-def seperator(newlines = 0):
-    sep = '-' * 80; newlines = '\n' * newlines
-    print(f'\n\n{sep}xxx{sep}{(newlines)}')
+def seperator(n1 = 0, n2 = 0):
+    sep = '-' * 80
+    n1, n2 = '\n' * n1, '\n' * n2
+    print(f'{n1}{sep}xxx{sep}{n2}')
 
 
 
@@ -41,7 +42,7 @@ def db_existance(db_name):
 
 def show_dbs():
     csr.execute('SHOW DATABASES')
-    return csr.fetchall()[3:]
+    return [x[0] for x in csr.fetchall()[3:]]
 
 
 
