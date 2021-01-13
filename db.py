@@ -57,7 +57,7 @@ def get_connection(db_name = None):
     try:
         _db = sql.connect(**connect_config)
     except Exception as e:
-        print('[Error]', e)
+        print('\t[Error]', e)
     else:
         return _db
 
@@ -72,7 +72,7 @@ def create_db(db_name, connect = False):
     except Exception as err:
         print('Error occurred')
         if err.errno == errorcode.ER_DB_CREATE_EXISTS:
-            print(f'[Error] DATABASE {db_name} already exists.')
+            print(f'\t[Error] DATABASE {db_name} already exists.')
         else:
             print(err)
     else:
@@ -93,9 +93,9 @@ def delete_db(db_name):
     except sql.Error as err:
         print('Error occurred!')
         if err.errno == errorcode.ER_BAD_DB_ERROR:
-            print(f'[Error] DATABASE {db_name} doesn\'t exist.')
+            print(f'\t[Error] DATABASE {db_name} doesn\'t exist.')
         else:
-            print(err)
+            print('\t[Error] ', err)
     else:
         print('Success')
 
@@ -112,9 +112,9 @@ def create_table(tb_name, data, db_name):
     except Exception as err:
         print('Error occurred')
         if err.errno == errorcode.ER_BAD_TABLE_ERROR:
-            print(f'[Error] TABLE {tb_name} already exists.')
+            print(f'\t[Error] TABLE {tb_name} already exists.')
         else:
-            print(err)
+            print('\t[Error] ', err)
     else:
         print('Success')
 
@@ -131,9 +131,9 @@ def delete_table(tb_name, db_name):
     except Exception as err:
         print('Error occurred')
         if err.errno == errorcode.ER_BAD_TABLE_ERROR:
-            print(f'[Error] TABLE {tb_name} doesn\'t exist.')
+            print(f'\t[Error] TABLE {tb_name} doesn\'t exist.')
         else:
-            print(err)
+            print('\t[Error] ', err)
     else:
         print('Success')
 
@@ -142,11 +142,20 @@ def delete_table(tb_name, db_name):
 def delete_all_tables(db_name):
     _db = get_connection(db_name)
     _csr = _db.cursor()
-    csr.execute('SHOW TABLES')
-    tables = csr.fetchall()
+    _csr.execute('SHOW TABLES')
+    tables = _csr.fetchall()
     for table in tables:
         delete_table(x[0], db_name)
     print(f'\nDeleted all tables on {db_name}.')
+
+
+
+def get_all_tables(db_name):
+    _db = get_connection(db_name)
+    _csr = _db.cursor()
+    _csr.execute(f'SHOW TABLES')
+
+    return [x[0] for x in _csr.fetchall()]
 
 
 

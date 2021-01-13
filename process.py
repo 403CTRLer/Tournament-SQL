@@ -173,7 +173,4 @@ def tournament_flow():
     winner = winner_data(winner, tour_name)
 
     save_winner()
-
-
-
-tournament_flow()
+    return winner[1], tour_name

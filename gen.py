@@ -119,10 +119,8 @@ def get_win_ids(round, db_name):
 def winner_data(_id, db_name):
     _db = get_connection(db_name)
     _csr = _db.cursor()
-    print(f'SELECT * FROM teams WHERE team_id = {_id}')
     _csr.execute(f'SELECT * FROM teams WHERE team_id = {_id}')
     winner = _csr.fetchall()[0]
-    print(f'SELECT * FROM players WHERE team_id = {_id}')
     _csr.execute(f'SELECT * FROM players WHERE team_id = {_id}')
     winner += _csr.fetchall()[0][2:]
 
