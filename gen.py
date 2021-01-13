@@ -22,18 +22,25 @@ def get_num_input(request = ''):
 
 
 
-def get_member_col(n_members):
+def get_member_col(prev_col, n_members):
     """ to generate srting for the column in player table """
 
-    members = []
-    for i in range(1, n_members + 1):
-        members += [f'member_{i}']
-
-    col = 'team_name'
+    col = ', '.join(prev_col)
+    members = str(', '.join([f"member_{x}" for x in range(1, n_members + 1)]))
     if members:
-        col = ', '.join([col] + members)
+        col += ', ' + members
 
     return col
+
+
+
+def add_member_col(n_members, tb_name, db_name):
+    """ adds columns for the number of members in each team on given table """
+
+    _db = get_connection(db_name)
+    for i in range(1, n_members + 1):
+        _db.cursor().execute(f'ALTER TABLE {tb_name} ADD member_{i} VARCHAR(30)')
+    _db.commit()
 
 
 
@@ -112,9 +119,20 @@ def get_win_ids(round, db_name):
 def winner_data(_id, db_name):
     _db = get_connection(db_name)
     _csr = _db.cursor()
+    print(f'SELECT * FROM teams WHERE team_id = {_id}')
     _csr.execute(f'SELECT * FROM teams WHERE team_id = {_id}')
     winner = _csr.fetchall()[0]
+    print(f'SELECT * FROM players WHERE team_id = {_id}')
     _csr.execute(f'SELECT * FROM players WHERE team_id = {_id}')
     winner += _csr.fetchall()[0][2:]
 
     return winner
+
+
+
+def fetch(tb_name, db_name, cols = '*', condition = ''):
+    _db = get_connection(db_name)
+    _csr = _db.cursor()
+    _csr.execute(f'SELECT {cols} FROM {tb_name} {condition}')
+
+    return _csr.fetchall()
