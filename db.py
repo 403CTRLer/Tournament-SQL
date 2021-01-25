@@ -31,10 +31,8 @@ def close():
 def db_existance(db_name):
     """ checks if database exists """
 
-    csr.execute('SHOW DATABASES')
-    csr.fetchall()
-    for _db in csr:
-        if _db[0] == db_name:
+    for _db in show_dbs():
+        if _db == db_name:
             return True
     return False
 
@@ -98,6 +96,25 @@ def delete_db(db_name):
             print('\t[Error] ', err)
     else:
         print('Success')
+
+
+
+def delete_all_dbs():
+    """ delete all database """
+
+    for db_name in show_dbs():
+        try:
+            print(f'Dropping DATABASE {db_name}:', end = ' ')
+            csr.execute(f'DROP DATABASE {db_name}')
+        except sql.Error as err:
+            print('Error occurred!')
+            if err.errno == errorcode.ER_BAD_DB_ERROR:
+                print(f'\t[Error] DATABASE {db_name} doesn\'t exist.')
+            else:
+                print('\t[Error] ', err)
+        else:
+            print('Success')
+    print("\nDeleted all databases!")
 
 
 

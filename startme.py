@@ -62,18 +62,18 @@ def menu():
 def list_all_tournaments():
     """ prints tabulate form of all tournaments and it's data """
 
+    seperator()
     tprint('DATA', font = 'rounded')
     print(tabulate(fetch('data', 'tournament_data'), ['S.No.', 'Name', 'Winner ID', 'Winner', 'Total Teams'], "pretty"))
-    seperator()
 
 
 
 def display_all_winners():
     """ prints tabulate form of all tournaments' winners """
 
+    seperator()
     tprint('WINNERS', font = 'rounded')
     print(tabulate(fetch('data', 'tournament_data', 'SNo, tournament_name, winner'), ['S.No.', 'Name', 'Winner'], "pretty"))
-    seperator()
 
 
 
@@ -81,15 +81,15 @@ def start_tournament():
     seperator(2)
     tprint('NEW TOURNAMENT', font = 'rounded')
     winner, tournament_name = tournament_flow()
-    tprint(f'Winner of \n {tournament_name} is...\n{winner}', font = 'stop')
+    tprint(f'Winner of \n {tournament_name} is...\n{winner}', font = 'small')
 
 
 
 def tournament_info():
     seperator()
     print("Avaiable tournaments")
-    list_all_tournaments()
-    print("\n")
+    print(tabulate(fetch('data', 'tournament_data'), ['S.No.', 'Name', 'Winner ID', 'Winner', 'Total Teams'], "pretty"))
+
     while True:
         tournament_name = input('Enter the name of the tournament you want to get info.\nName:')
         if tournament_name in show_dbs():
@@ -133,7 +133,7 @@ def create_data_tb():
 
 def check_db_setup():
     #Checks for the data DB for storing tournament data
-    if not db_existance('tournament_data'):
+    if db_existance('tournament_data'):
         return
 
     #Checking whether any Tournaments has been conducted
@@ -141,7 +141,7 @@ def check_db_setup():
     dbs = show_dbs()
     create_data_tb()
     if not dbs:
-        return create_db()
+        return
 
     repair_data_tb()
 
