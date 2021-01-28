@@ -45,6 +45,8 @@ def add_member_col(n_members, tb_name, db_name):
 
 
 def create_round_tb(round, db_name):
+    """ creates table for every round """
+
     create_table(
     f"round_{round}",
     "match_id INT AUTO_INCREMENT PRIMARY KEY,\
@@ -59,6 +61,8 @@ def create_round_tb(round, db_name):
 
 
 def get_teams(team_ids, db_name):
+    """ returns all data from the teams table for given teams """
+
     _db = get_connection(db_name)
     _csr = _db.cursor()
     _csr.execute(f'SELECT * FROM teams WHERE team_id in {team_ids}')
@@ -68,6 +72,8 @@ def get_teams(team_ids, db_name):
 
 
 def insert_round(team_ids, round, db_name):
+    """ inserts data on round table """
+
     team_1, team_2 = get_teams(team_ids, db_name)
 
     insert(
@@ -78,6 +84,8 @@ def insert_round(team_ids, round, db_name):
 
 
 def get_winner(match_id, round, db_name):
+    """ stores the win/loss count on DB and returns the winning team ID """
+
     _db = get_connection(db_name)
     _csr = _db.cursor()
     _csr.execute(f'SELECT team1_id, team2_id FROM round_{round} WHERE match_id = {match_id}')
@@ -108,6 +116,8 @@ def get_winner(match_id, round, db_name):
 
 
 def get_win_ids(round, db_name):
+    """ returns all the inning team ID from a round """
+
     _db = get_connection(db_name)
     _csr = _db.cursor()
     _csr.execute(f'SELECT win_id from round_{round}')
@@ -117,6 +127,8 @@ def get_win_ids(round, db_name):
 
 
 def winner_data(_id, db_name):
+    """ returns required info winners """
+
     _db = get_connection(db_name)
     _csr = _db.cursor()
     _csr.execute(f'SELECT * FROM teams WHERE team_id = {_id}')
@@ -129,6 +141,8 @@ def winner_data(_id, db_name):
 
 
 def fetch(tb_name, db_name, cols = '*', condition = ''):
+    """ basic select query """
+
     _db = get_connection(db_name)
     _csr = _db.cursor()
     _csr.execute(f'SELECT {cols} FROM {tb_name} {condition}')

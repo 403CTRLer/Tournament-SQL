@@ -2,9 +2,13 @@ from db import *
 from gen import *
 from random import shuffle
 
+
 tour_name = n_teams = n_members = roundno = p_tb_col = winner = 0
 
+
 def rounds(teams):
+    """ recursive function used to get round inputs and save it in db """
+
     global roundno
 
     roundno += 1
@@ -42,6 +46,8 @@ def rounds(teams):
 
 
 def _3teams(teams):
+    """ different gameplay algorithm for tournament with 3 teams in total/round """
+
     global roundno
     t1, t2, t3 = teams
     match_id = 1
@@ -73,6 +79,8 @@ def _3teams(teams):
 
 
 def oddteam(teams, match_id, win_ids):
+    """ gets winner input and stores it on db """
+
     insert_round(teams, roundno, tour_name)
 
     win_ids.append(get_winner(match_id, roundno, tour_name))
@@ -81,6 +89,8 @@ def oddteam(teams, match_id, win_ids):
 
 
 def teams():
+    """ gets team input team and calls function for members' name """
+
     for i in range(1, n_teams + 1):
         name = input(f"\nEnter team ({i}) name: ")
         insert('teams', tour_name, 'team_name', f'"{name}"')
@@ -92,6 +102,8 @@ def teams():
 
 
 def members_data(team_name):
+    """ function to get input members' names """
+
     members = tuple()
     for i in range(1, n_members + 1):
         members += (input(f'Enter member {i}\'s name: '),)
@@ -102,6 +114,8 @@ def members_data(team_name):
 
 
 def initialize_db():
+    """ creates all required tables within the database with the tournament's name """
+
     #creating db for the whole tournament
     create_db(tour_name)
 
@@ -128,6 +142,8 @@ def initialize_db():
 
 
 def user_inputs():
+    """ to get basic input about the tournament """
+
     global tour_name, n_teams, n_members, p_tb_col
 
     tour_name = unique_input("Enter tournament's name          : ", show_dbs(), "Tournament {} has already been created! \nTry a new name\n\n")
@@ -140,6 +156,7 @@ def user_inputs():
 
 
 def save_winner():
+    """ saves the winner of the current tournament in the global database """
 
     create_table("winner",
     "id INT NOT NULL,\
@@ -160,6 +177,7 @@ def save_winner():
     f"'{tour_name}', {data[0]}, '{data[1]}', {data[2]}")
 
 
+
 def tournament_flow():
     ''' calls all the function required for the proper execution of this code in order '''
 
@@ -168,8 +186,8 @@ def tournament_flow():
     initialize_db() #creates all neccessary db / tables in the beginning
 
     teams() #Func call to get team and members data
-
     global winner
+
     winner = rounds([x for x in range(1, n_teams + 1)])
     winner = winner_data(winner, tour_name)
 

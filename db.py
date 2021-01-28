@@ -39,6 +39,8 @@ def db_existance(db_name):
 
 
 def show_dbs():
+    """ return all the existing dbs except the 3 main schemas """
+
     csr.execute('SHOW DATABASES')
     return [x[0] for x in csr.fetchall()[3:]]
 
@@ -157,6 +159,8 @@ def delete_table(tb_name, db_name):
 
 
 def delete_all_tables(db_name):
+    """ deletes all tables in a given database """
+
     _db = get_connection(db_name)
     _csr = _db.cursor()
     _csr.execute('SHOW TABLES')
@@ -168,6 +172,8 @@ def delete_all_tables(db_name):
 
 
 def get_all_tables(db_name):
+    """ returns all tables from a database """
+
     _db = get_connection(db_name)
     _csr = _db.cursor()
     _csr.execute(f'SHOW TABLES')
@@ -177,6 +183,8 @@ def get_all_tables(db_name):
 
 
 def insert(tb_name, db_name, cols, vals):
+    """ inserts value into the table requires all the 4 parameters are mandatory """
+
     _db = get_connection(db_name)
     _csr = _db.cursor()
     #print(f'INSERT INTO {tb_name} ({cols}) VALUES ({vals})')

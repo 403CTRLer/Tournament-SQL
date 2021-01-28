@@ -1,14 +1,14 @@
 from art import tprint
-tprint('T O U R N A M E N T \nM A N A G E M E N T', font = 'rounded')
 from db import *
 from gen import *
 from process import tournament_flow
 from tabulate import tabulate
+tprint('T O U R N A M E N T \nM A N A G E M E N T', font = 'rounded')
 
 
 
 def start():
-    """ Function called on the program beginning """
+    """ main funciton for the execution of the program """
 
     #Checks the dbs for proper functioning of the code
     check_db_setup()
@@ -32,13 +32,10 @@ def start():
             tournament_info()
 
         elif option == 0:
-            pass
+            break
 
         elif option == 0:
-            pass
-
-        elif option == 0:
-            pass
+            break
 
 
 
@@ -57,6 +54,7 @@ def menu():
 
     return get_num_input("\nSelected: ")
     seperator(n2 = 1)
+
 
 
 def list_all_tournaments():
@@ -78,6 +76,8 @@ def display_all_winners():
 
 
 def start_tournament():
+    """ starts new tournament calls the `tournament_flow` function from `process.py` """
+
     seperator(2)
     tprint('NEW TOURNAMENT', font = 'rounded')
     winner, tournament_name = tournament_flow()
@@ -86,6 +86,8 @@ def start_tournament():
 
 
 def tournament_info():
+    """ displays info about a given tournament """
+
     seperator()
     print("Avaiable tournaments")
     print(tabulate(fetch('data', 'tournament_data'), ['S.No.', 'Name', 'Winner ID', 'Winner', 'Total Teams'], "pretty"))
@@ -116,8 +118,11 @@ def tournament_info():
 
 
 def create_data_tb():
+    """ creates table/db for the storing all tournament's info """
+
     seperator()
     print('initial setup...\n')
+
     create_db('tournament_data')
     create_table('data',
     """SNo INT AUTO_INCREMENT PRIMARY KEY,
@@ -126,12 +131,15 @@ def create_data_tb():
     winner VARCHAR(30),
     total_teams INT""",
     'tournament_data')
+
     print('Setup Completed!')
     seperator()
 
 
 
 def check_db_setup():
+    """ checks if the main db exists """
+
     #Checks for the data DB for storing tournament data
     if db_existance('tournament_data'):
         return
@@ -140,6 +148,7 @@ def check_db_setup():
     #If not it's the first time opening the pgm, so start setup process
     dbs = show_dbs()
     create_data_tb()
+
     if not dbs:
         return
 
@@ -148,6 +157,7 @@ def check_db_setup():
 
 
 def repair_data_tb():
+    """ recreates the main db with it's tables """
 
     all_dbs = show_dbs() #Gets all tournaments
     all_dbs.remove('tournament_data') #Removing the db from the tournament dbs
@@ -156,6 +166,7 @@ def repair_data_tb():
     existing_dbs = [x[0] for x in fetch('data', 'tournament_data', 'tournament_name')]
 
     dbs = set(all_dbs) - set(existing_dbs)
+
     #Adds all the old tournaments record to the tournament_data DB if the table is deleted or changed.
     for db in dbs:
         data = fetch('winner', 'x')[0][:2] + (len(fetch('teams', 'x', 'team_id')),)
