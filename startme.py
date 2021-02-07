@@ -31,14 +31,15 @@ def start():
         elif option == 4:
             tournament_info()
 
-        elif option == 0:
-            break
+        elif option == 5:
+            delete_tournament_info()
 
         elif option == 0:
             break
 
 
 
+#Displays menu for the project
 def menu():
     """ prints all data for the avaiable options """
 
@@ -50,13 +51,15 @@ def menu():
     \t1. Show all Tournaments.
     \t2. Start new tournament.
     \t3. Check winners of all tournaments.
-    \t4. Get a tournament's info""")
+    \t4. Get a tournament's info
+    \t5. Delete a tournament's data""")
 
     return get_num_input("\nSelected: ")
     seperator(n2 = 1)
 
 
 
+#Option 1: Lists all tournaments that has been completed
 def list_all_tournaments():
     """ prints tabulate form of all tournaments and it's data """
 
@@ -66,6 +69,7 @@ def list_all_tournaments():
 
 
 
+#Option 2: Displays all the winners from every tournament
 def display_all_winners():
     """ prints tabulate form of all tournaments' winners """
 
@@ -75,6 +79,8 @@ def display_all_winners():
 
 
 
+#Starts a new torunament
+#Just calls the main function on process.py file.
 def start_tournament():
     """ starts new tournament calls the `tournament_flow` function from `process.py` """
 
@@ -85,6 +91,8 @@ def start_tournament():
 
 
 
+#Displays every info avaiable from a single tournament
+#INFO: Teams, Players, Round info, Winner
 def tournament_info():
     """ displays info about a given tournament """
 
@@ -93,9 +101,14 @@ def tournament_info():
     print(tabulate(fetch('data', 'tournament_data'), ['S.No.', 'Name', 'Winner ID', 'Winner', 'Total Teams'], "pretty"))
 
     while True:
-        tournament_name = input('Enter the name of the tournament you want to get info.\nName:')
+        tournament_name = input('Enter the name of the tournament you want to get info.\nType "cancel" to stop! \n\nTournament: ')
+
         if tournament_name in show_dbs():
             break
+
+        elif tournament_name.lower() == 'cancel':
+            return print("Canceled getting tournament info! ")
+
         print(f"Cannot find tournament '{tournament_name}', maybe you've miss spelled it!\nTry again!")
 
     tprint('TOURNAMENT    INFO', font = 'rounded')
@@ -117,6 +130,41 @@ def tournament_info():
 
 
 
+#Removes a tournament's info
+def delete_tournament_info():
+    """ deletes all data for a tournament """
+
+    seperator()
+    print("Avaiable tournaments")
+    print(tabulate(fetch('data', 'tournament_data'), ['S.No.', 'Name', 'Winner ID', 'Winner', 'Total Teams'], "pretty"))
+
+    while True:
+        tournament_name = input('Enter the name of the tournament you want to delete.\nType "cancel" to stop! \n\nTournament: ')
+
+        if tournament_name in show_dbs():
+            break
+
+        elif tournament_name.lower() == 'cancel':
+            return print("Canceled deleting tournament! ")
+
+        print(f"Cannot find tournament '{tournament_name}', maybe you've miss spelled it!\nTry again!")
+
+    if fetch('data', 'tournament_data', condition = f'WHERE tournament_name = "{tournament_name}"'):
+        delete_row('data', 'tournament_data', condition = f'tournament_name = "{tournament_name}"')
+
+    delete_db(tournament_name)
+
+    print(f'Deletion successful! \nRemoved all data of "{tournament_name}" tournament!')
+
+
+
+
+#-------------------------------------------
+#Misc functions for checking database status
+#-------------------------------------------
+
+
+#Creates main DB | Setup
 def create_data_tb():
     """ creates table/db for the storing all tournament's info """
 
@@ -137,6 +185,7 @@ def create_data_tb():
 
 
 
+#Checks for DB
 def check_db_setup():
     """ checks if the main db exists """
 
@@ -156,6 +205,7 @@ def check_db_setup():
 
 
 
+#Repairs Data in the main database
 def repair_data_tb():
     """ recreates the main db with it's tables """
 
