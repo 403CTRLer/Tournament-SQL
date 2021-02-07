@@ -1,22 +1,19 @@
-#https://dev.mysql.com/doc/mysql-errors/8.0/en/server-error-reference.html
 import mysql.connector as sql
 from mysql.connector import errorcode #For checking exceptions
-
+from data import *
 
 def seperator(n1 = 0, n2 = 0):
+    """ line seperator to decorate terminal """
+
     sep = '-' * 80
     n1, n2 = '\n' * n1, '\n' * n2
     print(f'{n1}{sep}xxx{sep}{n2}')
 
 
 
-#ID and password for database
-config = {'host' : "localhost",
-          'user' : "root",
-          'passwd' : "Gamingrowdy@13"}
-
 db = sql.connect(**config)
 csr = db.cursor()
+
 
 
 def close():
@@ -189,4 +186,15 @@ def insert(tb_name, db_name, cols, vals):
     _csr = _db.cursor()
     #print(f'INSERT INTO {tb_name} ({cols}) VALUES ({vals})')
     _csr.execute(f'INSERT INTO {tb_name} ({cols}) VALUES ({vals})')
+    _db.commit()
+
+
+
+def delete_row(tb_name, db_name, condition):
+    """ deletes a row from table which satisfies the condition """
+
+    _db = get_connection(db_name)
+    _csr = _db.cursor()
+    print(f'DELETE FROM {tb_name} WHERE {condition}')
+    _csr.execute(f'DELETE FROM {tb_name} WHERE {condition}')
     _db.commit()
