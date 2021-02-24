@@ -14,8 +14,8 @@ def rounds(teams):
     roundno += 1
     shuffle(teams)
 
-    seperator()
     create_round_tb(roundno, tour_name)
+    seperator(2)
 
     #seperate tournament match for 3 teams
     if len(teams) == 3:

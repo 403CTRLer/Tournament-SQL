@@ -22,7 +22,7 @@ def get_num_input(request = ''):
 
 
 
-def get_member_col(prev_col, n_members):
+def get_member_col(prev_col : str, n_members : int):
     """ to generate srting for the column in player table """
 
     col = ', '.join(prev_col)
@@ -34,7 +34,7 @@ def get_member_col(prev_col, n_members):
 
 
 
-def add_member_col(n_members, tb_name, db_name):
+def add_member_col(n_members : int, tb_name : str, db_name : str):
     """ adds columns for the number of members in each team on given table """
 
     _db = get_connection(db_name)

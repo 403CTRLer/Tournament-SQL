@@ -3,5 +3,5 @@ config = {'host' : "localhost",
           'user' : "root",
           'passwd' : "Gamingrowdy@13"}
 
-sep = '-' * 80
-print(sep)
+sep = '-' * 82
+print(f"{sep}xxx{sep}")

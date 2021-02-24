@@ -2,7 +2,7 @@ import mysql.connector as sql
 from mysql.connector import errorcode #For checking exceptions
 from data import *
 
-def seperator(n1 = 0, n2 = 0):
+def seperator(n1 : int = 0, n2 : int = 0):
     """ line seperator to decorate terminal """
 
     n1, n2 = '\n' * n1, '\n' * n2
@@ -49,7 +49,7 @@ def get_connection(db_name = None):
 
 
 
-def create_db(db_name, connect = False):
+def create_db(db_name : str, connect : bool = False):
     """ creates a database """
 
     try:

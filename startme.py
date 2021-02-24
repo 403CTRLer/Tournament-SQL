@@ -88,7 +88,8 @@ def start_tournament():
     seperator(2)
     tprint('NEW TOURNAMENT', font = 'rounded')
     winner, tournament_name = tournament_flow()
-    tprint(f'Winner of \n {tournament_name} is...\n{winner}', font = 'small')
+    seperator(2, 2)
+    tprint(f'Winner of \n{tournament_name}   is...\n{winner}', font = 'small')
 
 
 
@@ -122,8 +123,6 @@ def tournament_info():
     print(tabulate(fetch('players', tournament_name), [x.upper() for x in ['ID', 'Name'] + get_member_col([], 2).split(",")[1:]], "pretty"))
 
     rounds = [i for i in get_all_tables(tournament_name) if i.startswith('round_')]
-    print(get_all_tables(tournament_name))
-    print(rounds)
     for table in rounds:
         print('\n\n')
         tprint((table.upper()).replace('_', '   '), font = 'small')
