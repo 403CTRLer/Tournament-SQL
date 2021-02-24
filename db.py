@@ -5,9 +5,8 @@ from data import *
 def seperator(n1 = 0, n2 = 0):
     """ line seperator to decorate terminal """
 
-    sep = '-' * 80
     n1, n2 = '\n' * n1, '\n' * n2
-    print(f'{n1}{sep}xxx{sep}{n2}')
+    print(f'{n1}{sep}xxx{sep}{n2}') #sep (seperator) from data.py
 
 
 
@@ -16,20 +15,10 @@ csr = db.cursor()
 
 
 
-def close():
-    """ commit changes to database and close connection """
-
-    csr.close() #Closing cursor
-    db.commit() #Saves all changes
-    db.close()  #Closing connection with db
-
-
-
 def db_existance(db_name):
     """ checks if database exists """
 
-    for _db in show_dbs():
-        if _db == db_name:
+    if db_name.lower() in show_dbs():
             return True
     return False
 
@@ -49,10 +38,10 @@ def get_connection(db_name = None):
     if not db_name:
         return db
 
-    connect_config = config
-    connect_config['database'] = db_name #adding db to the config declared globally
+    config_copy = config
+    config_copy['database'] = db_name #adding db to the config declared globally
     try:
-        _db = sql.connect(**connect_config)
+        _db = sql.connect(**config_copy)
     except Exception as e:
         print('\t[Error]', e)
     else:
@@ -102,17 +91,7 @@ def delete_all_dbs():
     """ delete all database """
 
     for db_name in show_dbs():
-        try:
-            print(f'Dropping DATABASE {db_name}:', end = ' ')
-            csr.execute(f'DROP DATABASE {db_name}')
-        except sql.Error as err:
-            print('Error occurred!')
-            if err.errno == errorcode.ER_BAD_DB_ERROR:
-                print(f'\t[Error] DATABASE {db_name} doesn\'t exist.')
-            else:
-                print('\t[Error] ', err)
-        else:
-            print('Success')
+        delete_db(db_name)
     print("\nDeleted all databases!")
 
 
@@ -121,10 +100,9 @@ def create_table(tb_name, data, db_name):
     """ creates the table on database """
 
     _db = get_connection(db_name)
-    _csr = _db.cursor()
     try:
         print(f'Creating TABLE {tb_name}: ', end = '')
-        _csr.execute(f'CREATE TABLE {tb_name} ({data})')
+        _db.cursor().execute(f'CREATE TABLE {tb_name} ({data})')
     except Exception as err:
         print('Error occurred')
         if err.errno == errorcode.ER_BAD_TABLE_ERROR:
@@ -140,10 +118,9 @@ def delete_table(tb_name, db_name):
     """ deletes the given table on database """
 
     _db = get_connection(db_name)
-    _csr = _db.cursor()
     try:
         print(f'Dropping TABLE {tb_name} from {db_name}:', end = ' ')
-        _csr.execute(f'DROP TABLE {tb_name}')
+        _db.cursor().execute(f'DROP TABLE {tb_name}')
     except Exception as err:
         print('Error occurred')
         if err.errno == errorcode.ER_BAD_TABLE_ERROR:
@@ -183,9 +160,8 @@ def insert(tb_name, db_name, cols, vals):
     """ inserts value into the table requires all the 4 parameters are mandatory """
 
     _db = get_connection(db_name)
-    _csr = _db.cursor()
     #print(f'INSERT INTO {tb_name} ({cols}) VALUES ({vals})')
-    _csr.execute(f'INSERT INTO {tb_name} ({cols}) VALUES ({vals})')
+    _db.cursor().execute(f'INSERT INTO {tb_name} ({cols}) VALUES ({vals})')
     _db.commit()
 
 
@@ -194,7 +170,18 @@ def delete_row(tb_name, db_name, condition):
     """ deletes a row from table which satisfies the condition """
 
     _db = get_connection(db_name)
-    _csr = _db.cursor()
-    print(f'DELETE FROM {tb_name} WHERE {condition}')
-    _csr.execute(f'DELETE FROM {tb_name} WHERE {condition}')
+    #print(f'DELETE FROM {tb_name} WHERE {condition}')
+    _db.cursor().execute(f'DELETE FROM {tb_name} WHERE {condition}')
     _db.commit()
+
+
+
+
+def fetch(tb_name, db_name, cols = '*', condition = ''):
+    """ basic select query """
+
+    _db = get_connection(db_name)
+    _csr = _db.cursor()
+    _csr.execute(f'SELECT {cols} FROM {tb_name} {condition}')
+
+    return _csr.fetchall()

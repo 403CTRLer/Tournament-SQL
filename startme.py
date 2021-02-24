@@ -16,8 +16,9 @@ def start():
     #Continues the menu selection infintely untill the user stops
     while True:
         option = menu()
+
         if not option:
-            break
+            break #Stops the program if no input is given
 
         if option == 1:
             list_all_tournaments()
@@ -209,7 +210,7 @@ def check_db_setup():
 def repair_data_tb():
     """ recreates the main db with it's tables """
 
-    all_dbs = show_dbs() #Gets all tournaments
+    all_dbs = show_dbs() #Gets all tournaments as list
     all_dbs.remove('tournament_data') #Removing the db from the tournament dbs
 
     #Geting all the tournaments record filled in the data table

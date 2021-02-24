@@ -15,9 +15,9 @@ def get_num_input(request = ''):
     """ returns a number input from user for the given query """
 
     while True:
-        count = input(request)
-        if count.isdigit():
-            return int(count)
+        num = input(request)
+        if num.isdigit():
+            return int(num)
         print("Not a valid entry | Enter a number not string!\n")
 
 
@@ -137,14 +137,3 @@ def winner_data(_id, db_name):
     winner += _csr.fetchall()[0][2:]
 
     return winner
-
-
-
-def fetch(tb_name, db_name, cols = '*', condition = ''):
-    """ basic select query """
-
-    _db = get_connection(db_name)
-    _csr = _db.cursor()
-    _csr.execute(f'SELECT {cols} FROM {tb_name} {condition}')
-
-    return _csr.fetchall()
